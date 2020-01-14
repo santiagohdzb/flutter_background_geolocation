@@ -87,56 +87,10 @@ public class FLTBackgroundGeolocationPlugin implements MethodCallHandler, Applic
         FLTBackgroundGeolocationPlugin plugin = new FLTBackgroundGeolocationPlugin(registrar);
         final MethodChannel channel = new MethodChannel(registrar.messenger(), METHOD_CHANNEL_NAME);
         channel.setMethodCallHandler(plugin);
-        registrar.addViewDestroyListener(plugin);
     }
 
     private FLTBackgroundGeolocationPlugin(final PluginRegistry.Registrar registrar) {
-        final Activity activity = registrar.activity();
 
-        mContext = registrar.context().getApplicationContext();
-        mReady = false;
-
-        if (activity != null) {
-            mIsInitialized = false;
-            mRegistrar = registrar;
-
-            mLaunchIntent = activity.getIntent();
-
-            BackgroundGeolocation.getThreadPool().execute(new Runnable() {
-                @Override
-                public void run() {
-                    BackgroundGeolocation adapter = BackgroundGeolocation.getInstance(mContext, mLaunchIntent);
-                    adapter.setActivity(activity);
-                    // Allow desiredAccuracy configuration as CLLocationAccuracy
-                    TSConfig config = TSConfig.getInstance(registrar.context().getApplicationContext());
-                    config.useCLLocationAccuracy(true);
-
-                    config.updateWithBuilder()
-                            .setHeadlessJobService(JOB_SERVICE_CLASS)
-                            .commit();
-
-                    // Init stream-handlers
-                    new LocationStreamHandler().register(registrar);
-                    new MotionChangeStreamHandler().register(registrar);
-                    new ActivityChangeStreamHandler().register(registrar);
-                    new GeofencesChangeStreamHandler().register(registrar);
-                    new GeofenceStreamHandler().register(registrar);
-                    new HeartbeatStreamHandler().register(registrar);
-                    new HttpStreamHandler().register(registrar);
-                    new ScheduleStreamHandler().register(registrar);
-                    new ConnectivityChangeStreamHandler().register(registrar);
-                    new EnabledChangeStreamHandler().register(registrar);
-                    new ProviderChangeStreamHandler().register(registrar);
-                    new PowerSaveChangeStreamHandler().register(registrar);
-                    new NotificationActionStreamHandler().register(registrar);
-                }
-            });
-
-
-            // We need to know when activity is created / destroyed.
-            activity.getApplication().registerActivityLifecycleCallbacks(this);
-
-        }
     }
 
     public static void setPluginRegistrant(PluginRegistry.PluginRegistrantCallback callback) {

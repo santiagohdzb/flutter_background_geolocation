@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -81,31 +83,54 @@ void backgroundFetchHeadlessTask() async {
   BackgroundFetch.finish();
 }
 
+class AndroidStubApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Plugin is not for free for android',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Plugin is not for free for android'),
+        ),
+        body: Center(
+          child: Text('Welcome!'),
+        ),
+      ),
+    );
+  }
+}
+
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isAndroid) {
+    runApp(AndroidStubApp());
+  }
 
-  /// Application selection:  Select the app to boot:
-  /// - AdvancedApp
-  /// - HelloWorldAp
-  /// - HomeApp
-  ///
-  SharedPreferences.getInstance().then((SharedPreferences prefs) {
-    String appName = prefs.getString("app");
-    switch(appName) {
-      case AdvancedApp.NAME:
-        runApp(new AdvancedApp());
-        break;
-      case HelloWorldApp.NAME:
-        runApp(new HelloWorldApp());
-        break;
-      default:
+  if (Platform.isIOS) {
+    WidgetsFlutterBinding.ensureInitialized();
+
+    /// Application selection:  Select the app to boot:
+    /// - AdvancedApp
+    /// - HelloWorldAp
+    /// - HomeApp
+    ///
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+      String appName = prefs.getString("app");
+      switch(appName) {
+        case AdvancedApp.NAME:
+          runApp(new AdvancedApp());
+          break;
+        case HelloWorldApp.NAME:
+          runApp(new HelloWorldApp());
+          break;
+        default:
         // Default app.  Renders the application selector home page.
-        runApp(new HomeApp());
-    }
-  });
+          runApp(new HomeApp());
+      }
+    });
 
-  /// Register BackgroundGeolocation headless-task.
-  bg.BackgroundGeolocation.registerHeadlessTask(backgroundGeolocationHeadlessTask);
-  /// Register BackgroundFetch headless-task.
-  BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
+    /// Register BackgroundGeolocation headless-task.
+    bg.BackgroundGeolocation.registerHeadlessTask(backgroundGeolocationHeadlessTask);
+    /// Register BackgroundFetch headless-task.
+    BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
+  }
 }
