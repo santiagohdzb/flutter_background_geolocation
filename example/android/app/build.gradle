@@ -30,10 +30,6 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
-// flutter_background_geolocation
-Project background_geolocation = project(':flutter_background_geolocation')
-apply from: "${background_geolocation.projectDir}/background_geolocation.gradle"
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
@@ -65,7 +61,6 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources false
-            proguardFiles "${background_geolocation.projectDir}/proguard-rules.pro"
         }
     }
 }
